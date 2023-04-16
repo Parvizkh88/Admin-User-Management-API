@@ -1,6 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
+
 const dev = require('./config');
+const connectDatabase = require('./config/db');
 
 const app = express();
 
@@ -12,6 +14,7 @@ app.get('/', (req, res) => {
     res.status(200).send('api is running fine');
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`server is running at http://localhost:${PORT}`);
+    await connectDatabase();
 })
