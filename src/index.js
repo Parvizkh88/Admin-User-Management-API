@@ -5,6 +5,9 @@ const bodyParser = require('body-parser');
 const dev = require('./config');
 const connectDatabase = require('./config/db');
 const userRouter = require('./routes/users.js');
+// Anisul did this:
+// const userRouter = require('./routes/users.js');
+
 
 const app = express();
 
@@ -14,7 +17,6 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/users', userRouter);
-
 app.get('/', (req, res) => {
     res.status(200).send('api is running fine');
 });
