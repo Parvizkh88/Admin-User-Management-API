@@ -66,5 +66,35 @@ const registerUser = async (req, res) => {
             message: error.message
         });
     }
+};
+
+const verifyEmail = (req, res) => {
+    try {
+        const { token } = req.body;
+        if (!token) {
+            return res.status(404).json({
+                message: 'token is missing',
+            });
+        }
+        jwt.verify(token, dev.app.jwtSecretKey, function (err, decoded) {
+            if (err) {
+                return res.status(401).json({
+                    message: 'token is expired',
+                });
+            }
+            const { name, email, phone, hashedPassword, image } = decoded;
+            // const { name } = decoded;
+            // console.log(decoded);
+            // console.log(name);
+        });
+        res.status(200).json({
+            message: 'email is verified',
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
 }
-module.exports = { registerUser }
+
+module.exports = { registerUser, verifyEmail }
