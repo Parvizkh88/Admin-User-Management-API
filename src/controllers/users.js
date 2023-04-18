@@ -57,7 +57,7 @@ const registerUser = async (req, res) => {
             `,
         };
 
-        await sendEmailWithNodeMailer(emailData);
+        sendEmailWithNodeMailer(emailData);
 
         res.status(200).json({
             message: 'verification link has been sent to your email.',
@@ -87,7 +87,7 @@ const verifyEmail = async (req, res) => {
             // decoded the data
             const { name, email, phone, hashedPassword, image } = decoded;
             // const { name } = decoded;
-            // console.log(decoded);
+            console.log(decoded);
             // console.log(name);
             const isExist = await User.findOne({ email: email })
             if (isExist) {
@@ -103,6 +103,7 @@ const verifyEmail = async (req, res) => {
                 password: hashedPassword,
                 phone: phone
             })
+            console.log(newUser);
             // create the user with image
             if (image) {
                 newUser.image.data = fs.readFileSync(image.path);
@@ -116,6 +117,7 @@ const verifyEmail = async (req, res) => {
                 });
             }
             res.status(200).json({
+                // user,
                 message: 'user was created. ready to login',
             });
         });

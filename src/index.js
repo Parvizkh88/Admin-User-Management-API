@@ -5,9 +5,6 @@ const bodyParser = require('body-parser');
 const dev = require('./config');
 const connectDatabase = require('./config/db');
 const userRouter = require('./routes/users.js');
-// Anisul did this:
-// const userRouter = require('./routes/users.js');
-
 
 const app = express();
 
