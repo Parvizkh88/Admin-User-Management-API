@@ -1,9 +1,11 @@
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
-const dev = require('../config');
 
 const { securePassword } = require("../helpers/bcryptPassword");
-const { sendEmailWithNodeMailer } = require('../helpers/email');
 const User = require('../models/users.js');
+const dev = require('../config');
+const { sendEmailWithNodeMailer } = require('../helpers/email');
+
 
 const registerUser = async (req, res) => {
     try {
@@ -41,7 +43,7 @@ const registerUser = async (req, res) => {
         const token = jwt.sign(
             { name, email, phone, hashedPassword, image },
             dev.app.jwtSecretKey,
-            { expiresIn: '10m' }
+            { expiresIn: '20m' }
         );
 
         // prepare an email
@@ -55,7 +57,7 @@ const registerUser = async (req, res) => {
             `,
         };
 
-        sendEmailWithNodeMailer(emailData)
+        sendEmailWithNodeMailer(emailData);
 
         res.status(200).json({
             message: 'verification link has been sent to your email.',
@@ -68,7 +70,7 @@ const registerUser = async (req, res) => {
     }
 };
 
-const verifyEmail = (req, res) => {
+const verifyEmail = async (req, res) => {
     try {
         const { token } = req.body;
         if (!token) {
@@ -76,16 +78,46 @@ const verifyEmail = (req, res) => {
                 message: 'token is missing',
             });
         }
-        jwt.verify(token, dev.app.jwtSecretKey, function (err, decoded) {
+        jwt.verify(token, dev.app.jwtSecretKey, async function (err, decoded) {
             if (err) {
                 return res.status(401).json({
                     message: 'token is expired',
                 });
             }
+            // decoded the data
             const { name, email, phone, hashedPassword, image } = decoded;
             // const { name } = decoded;
             // console.log(decoded);
             // console.log(name);
+            const isExist = await User.findOne({ email: email })
+            if (isExist) {
+                return res.status(400).json({
+                    message: 'user with this email already exists'
+                });
+            }
+
+            // create the user without image
+            const newUser = new User({
+                name: name,
+                email: email,
+                password: hashedPassword,
+                phone: phone
+            })
+            // create the user with image
+            if (image) {
+                newUser.image.data = fs.readFileSync(image.path);
+                newUser.image.contentType = image.type;
+            }
+            // save the user
+            const user = await newUser.save()
+            if (!user) {
+                res.status(400).json({
+                    message: 'user was not created',
+                });
+            }
+            res.status(200).json({
+                message: 'user was created. ready to login',
+            });
         });
         res.status(200).json({
             message: 'email is verified',
