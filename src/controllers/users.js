@@ -57,7 +57,7 @@ const registerUser = async (req, res) => {
             `,
         };
 
-        sendEmailWithNodeMailer(emailData);
+        await sendEmailWithNodeMailer(emailData);
 
         res.status(200).json({
             message: 'verification link has been sent to your email.',
@@ -118,9 +118,6 @@ const verifyEmail = async (req, res) => {
             res.status(200).json({
                 message: 'user was created. ready to login',
             });
-        });
-        res.status(200).json({
-            message: 'email is verified',
         });
     } catch (error) {
         res.status(500).json({
