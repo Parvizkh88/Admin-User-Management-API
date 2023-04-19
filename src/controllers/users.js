@@ -52,8 +52,7 @@ const registerUser = async (req, res) => {
             subject: "Account Activation Email",
             html: `
             <h2>Hello ${name}! </h2>
-            <p>Please click here to <a href="${dev.app.clientUrl}/api/users/activate/
-            ${token}" target="_blank">activate your account</a> </p>
+            <p>Please click here to <a href="${dev.app.clientUrl}/api/users/activate?token=${token}" target="_blank">activate your account</a> </p>
             `,
         };
 
@@ -115,7 +114,6 @@ const verifyEmail = async (req, res) => {
                 });
             }
             res.status(201).json({
-                user,
                 message: 'user was created. ready to login',
             });
         });
@@ -157,6 +155,8 @@ const loginUser = async (req, res) => {
                 message: 'email/password mismatched'
             });
         }
+        // creating session
+        req.session.userId = user._id;
 
         res.status(200).json({
             user: {
