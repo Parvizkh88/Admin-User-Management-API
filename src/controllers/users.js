@@ -1,7 +1,7 @@
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
-const { securePassword } = require("../helpers/bcryptPassword");
+const { securePassword, comparePassword } = require("../helpers/bcryptPassword");
 const User = require('../models/users.js');
 const dev = require('../config');
 const { sendEmailWithNodeMailer } = require('../helpers/email');
@@ -86,9 +86,6 @@ const verifyEmail = async (req, res) => {
             }
             // decoded the data
             const { name, email, phone, hashedPassword, image } = decoded;
-            // const { name } = decoded;
-            console.log(decoded);
-            // console.log(name);
             const isExist = await User.findOne({ email: email })
             if (isExist) {
                 return res.status(400).json({
@@ -127,6 +124,65 @@ const verifyEmail = async (req, res) => {
             message: error.message
         });
     }
-}
+};
 
-module.exports = { registerUser, verifyEmail }
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(404).json({
+                message: 'emailor password is missing '
+            });
+        }
+
+        if (password.length < 6) {
+            return res.status(404).json({
+                message: 'minimum length for password is 6'
+            });
+        }
+
+        const user = await User.findOne({ email: email })
+        if (!user) {
+            return res.status(400).json({
+                message: 'user with this email does not exist. Please register first'
+            });
+        }
+
+        const isPasswordMatched = await comparePassword(password, user.password)
+        console.log(user.password);
+
+        if (!isPasswordMatched) {
+            return res.status(400).json({
+                message: 'email/password mismatched'
+            });
+        }
+
+        res.status(200).json({
+            user: {
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                image: user.image,
+            },
+            message: 'login successful',
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+const logoutUser = (req, res) => {
+    try {
+        res.status(200).json({
+            message: 'logout successful',
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+module.exports = { registerUser, verifyEmail, loginUser, logoutUser }
