@@ -117,7 +117,7 @@ const verifyEmail = async (req, res) => {
                     message: 'user was not created',
                 });
             }
-            res.status(200).json({
+            res.status(201).json({
                 user,
                 message: 'user was created. ready to login',
             });
