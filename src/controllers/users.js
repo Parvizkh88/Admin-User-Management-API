@@ -149,7 +149,8 @@ const loginUser = async (req, res) => {
         }
 
         const isPasswordMatched = await comparePassword(password, user.password)
-        console.log(user.password);
+        // console.log(user.password);
+        // console.log(password);
 
         if (!isPasswordMatched) {
             return res.status(400).json({
@@ -185,4 +186,16 @@ const logoutUser = (req, res) => {
     }
 };
 
-module.exports = { registerUser, verifyEmail, loginUser, logoutUser }
+const userProfile = (req, res) => {
+    try {
+        res.status(200).json({
+            message: 'lprofile is returned',
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+module.exports = { registerUser, verifyEmail, loginUser, logoutUser, userProfile }
