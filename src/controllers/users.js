@@ -177,10 +177,12 @@ const loginUser = async (req, res) => {
 const logoutUser = (req, res) => {
     try {
         res.status(200).json({
+            ok: true,
             message: 'logout successful',
         });
     } catch (error) {
         res.status(500).json({
+            ok: false,
             message: error.message
         });
     }
@@ -189,7 +191,7 @@ const logoutUser = (req, res) => {
 const userProfile = (req, res) => {
     try {
         res.status(200).json({
-            message: 'lprofile is returned',
+            message: 'profile is returned',
         });
     } catch (error) {
         res.status(500).json({
