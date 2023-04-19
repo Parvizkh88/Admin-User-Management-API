@@ -4,7 +4,7 @@ const dev = require('../config');
 const userRouter = require('express').Router();
 const { registerUser, verifyEmail, loginUser,
     logoutUser, userProfile } = require('../controllers/users');
-const { isLoggedIn } = require('../middlewares/auth');
+const { isLoggedIn, isLoggedOut } = require('../middlewares/auth');
 
 userRouter.use(session({
     name: 'user_session',
@@ -16,7 +16,7 @@ userRouter.use(session({
 
 userRouter.post('/register', formidable(), registerUser);
 userRouter.post('/verify-email', verifyEmail);
-userRouter.post('/login', loginUser);
+userRouter.post('/login', isLoggedOut, loginUser);
 userRouter.get('/logout', logoutUser);
 userRouter.get('/', isLoggedIn, userProfile);
 
