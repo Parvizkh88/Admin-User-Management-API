@@ -101,7 +101,8 @@ const verifyEmail = async (req, res) => {
                 name: name,
                 email: email,
                 password: hashedPassword,
-                phone: phone
+                phone: phone,
+                is_verified: 1,
             })
             console.log(newUser);
             // create the user with image
@@ -117,7 +118,7 @@ const verifyEmail = async (req, res) => {
                 });
             }
             res.status(200).json({
-                // user,
+                user,
                 message: 'user was created. ready to login',
             });
         });
