@@ -19,6 +19,8 @@ userRouter.post('/verify-email', verifyEmail);
 userRouter.post('/login', isLoggedOut, loginUser);
 userRouter.get('/logout', logoutUser);
 userRouter.get('/', isLoggedIn, userProfile);
+// userRouter.delete('/', isLoggedIn, deleteUser);
+// userRouter.put('/', isLoggedIn, updateUser);
 
 
 module.exports = userRouter;

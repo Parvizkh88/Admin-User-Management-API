@@ -100,7 +100,7 @@ const verifyEmail = async (req, res) => {
                 phone: phone,
                 is_verified: 1,
             })
-            console.log(newUser);
+            // console.log(newUser);
             // create the user with image
             if (image) {
                 newUser.image.data = fs.readFileSync(image.path);
@@ -177,7 +177,6 @@ const loginUser = async (req, res) => {
 const logoutUser = (req, res) => {
     try {
         req.session.destroy();
-        res.clearCookie('user_session');
         res.status(200).json({
             ok: true,
             message: 'logout successful',
@@ -190,10 +189,14 @@ const logoutUser = (req, res) => {
     }
 };
 
-const userProfile = (req, res) => {
+const userProfile = async (req, res) => {
     try {
+        // do not show the password
+        const userData = await User.findById(req.session.userId, { password: 0 })
         res.status(200).json({
+            ok: true,
             message: 'profile is returned',
+            user: userData,
         });
     } catch (error) {
         res.status(500).json({
