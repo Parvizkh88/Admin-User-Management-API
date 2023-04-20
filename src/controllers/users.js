@@ -204,5 +204,21 @@ const userProfile = async (req, res) => {
         });
     }
 };
+const deleteUser = async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.session.userId);
+        res.status(200).json({
+            ok: true,
+            message: 'user was deleted succeessfuly',
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
 
-module.exports = { registerUser, verifyEmail, loginUser, logoutUser, userProfile }
+module.exports = {
+    registerUser, verifyEmail, loginUser,
+    logoutUser, userProfile, deleteUser
+}
