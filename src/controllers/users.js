@@ -217,8 +217,44 @@ const deleteUser = async (req, res) => {
         });
     }
 };
+const updateUser = async (req, res) => {
+    try {
+        // if we have the password then we need to hash it as well
+        if (!req.fields.password) {
+            // 
+        }
+        const hashedPassword = await securePassword(req.fields.password);
+        const updatedData = await User.findByIdAndUpdate(req.session.userId,
+            { ...req.fields, password: hashedPassword },
+            // return updated data
+            { new: true });
+
+        if (!updatedData) {
+            res.status(400).json({
+                ok: false,
+                message: 'user was not updated',
+            });
+        }
+        if (req.files.image) {
+            // access to image
+            const { image } = req.files;
+            updatedData.image.data = fs.readFileSync(image.path);
+            updatedData.image.contentType = image.type;
+        }
+        await updatedData.save();
+
+        res.status(200).json({
+            ok: true,
+            message: 'user was updated succeessfuly',
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
 
 module.exports = {
     registerUser, verifyEmail, loginUser,
-    logoutUser, userProfile, deleteUser
+    logoutUser, userProfile, deleteUser, updateUser
 }
