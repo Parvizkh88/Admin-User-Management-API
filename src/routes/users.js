@@ -17,7 +17,7 @@ userRouter.use(session({
 userRouter.post('/register', formidable(), registerUser);
 userRouter.post('/verify-email', verifyEmail);
 userRouter.post('/login', isLoggedOut, loginUser);
-userRouter.get('/logout', logoutUser);
+userRouter.get('/logout', isLoggedIn, logoutUser);
 userRouter.get('/', isLoggedIn, userProfile);
 userRouter.delete('/', isLoggedIn, deleteUser);
 userRouter.put('/', isLoggedIn, formidable(), updateUser);
