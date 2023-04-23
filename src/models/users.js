@@ -34,18 +34,22 @@ const userSchema = new Schema({
         type: Number,
         default: 0,
     },
-    is_verified: {
-        type: Number,
-        default: 0,
-    },
     createdAt: {
         type: Date,
         default: Date.now,
     },
     image: {
-        data: Buffer,
-        contentType: String,
-    }
+        type: String,
+        default: '../../public/images/users/Jordan.jpg',
+    },
+    isBanned: {
+        type: Number,
+        default: 0,
+    },
+    // image: {
+    //     data: Buffer,
+    //     contentType: String,
+    // }
 });
 
 const User = model('Users', userSchema);

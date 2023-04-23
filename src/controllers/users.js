@@ -5,12 +5,13 @@ const { securePassword, comparePassword } = require("../helpers/bcryptPassword")
 const User = require('../models/users.js');
 const dev = require('../config');
 const { sendEmailWithNodeMailer } = require('../helpers/email');
+const { errorResponse, successResponse } = require('../helpers/responseHandler');
 
 
 const registerUser = async (req, res) => {
     try {
-        const { name, email, phone, password } = req.fields;
-        const { image } = req.files;
+        const { name, email, phone, password } = req.body;
+        const { image } = req.file.filename;
 
         if (!name || !email || !phone || !password) {
             return res.status(404).json({
@@ -31,11 +32,9 @@ const registerUser = async (req, res) => {
         }
 
         const isExist = await User.findOne({ email: email })
-        if (isExist) {
-            return res.status(400).json({
-                message: 'user with this email already exists'
-            });
-        }
+        if (isExist)
+            errorResponse(res, 400, 'user with this email already exists')
+
 
         const hashedPassword = await securePassword(password);
 
@@ -57,11 +56,7 @@ const registerUser = async (req, res) => {
         };
 
         sendEmailWithNodeMailer(emailData);
-
-        res.status(200).json({
-            message: 'verification link has been sent to your email.',
-            token: token,
-        });
+        successResponse(res, 200, 'verification link has been sent to your email.', token);
     } catch (error) {
         res.status(500).json({
             message: error.message

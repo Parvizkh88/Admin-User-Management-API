@@ -5,6 +5,7 @@ const { securePassword, comparePassword } = require("../helpers/bcryptPassword")
 const User = require('../models/users.js');
 const dev = require('../config');
 const { sendEmailWithNodeMailer } = require('../helpers/email');
+const { errorResponse } = require('../helpers/responseHandler');
 
 
 const loginAdmin = async (req, res) => {
@@ -12,23 +13,16 @@ const loginAdmin = async (req, res) => {
         // we need to get email and password from req.body to login
         const { email, password } = req.body;
         if (!email || !password) {
-            return res.status(404).json({
-                message: 'emailor password is missing '
-            });
+            errorResponse(res, 400, 'email or password not found');
         }
 
-        if (password.length < 6) {
-            return res.status(404).json({
-                message: 'minimum length for password is 6'
-            });
-        }
+        if (password.length < 6)
+            errorResponse(res, 400, 'minimum length for password is 6');
 
         const user = await User.findOne({ email: email })
-        if (!user) {
-            return res.status(400).json({
-                message: 'user with this email does not exist. Please register first'
-            });
-        }
+        if (!user)
+            errorResponse(res, 400, 'user with this email does not exist. Please register first');
+
         // isAdmin - I want to check it before checking the password and comparing ...
         if (user.is_admin === 0) {
             return res.status(400).json({
