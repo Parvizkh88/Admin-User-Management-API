@@ -11,7 +11,10 @@ const { errorResponse, successResponse } = require('../helpers/responseHandler')
 const registerUser = async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
-        const { image } = req.file.filename;
+
+        const isExist = await User.findOne({ email: email })
+        if (isExist)
+            errorResponse(res, 400, 'user with this email already exists')
 
         if (!name || !email || !phone || !password) {
             return res.status(404).json({
@@ -25,16 +28,7 @@ const registerUser = async (req, res) => {
             });
         }
 
-        if (image && image.size > 1000000) {
-            return res.status(400).json({
-                message: 'maximum size for image is 1mb'
-            });
-        }
-
-        const isExist = await User.findOne({ email: email })
-        if (isExist)
-            errorResponse(res, 400, 'user with this email already exists')
-
+        const { image } = req.file.filename;
 
         const hashedPassword = await securePassword(password);
 
