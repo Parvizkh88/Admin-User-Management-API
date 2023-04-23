@@ -177,6 +177,7 @@ const loginUser = async (req, res) => {
 const logoutUser = (req, res) => {
     try {
         req.session.destroy();
+        res.clearCookie('user_session');
         res.status(200).json({
             ok: true,
             message: 'logout successful',

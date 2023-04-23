@@ -18,9 +18,11 @@ userRouter.post('/register', formidable(), registerUser);
 userRouter.post('/verify-email', verifyEmail);
 userRouter.post('/login', isLoggedOut, loginUser);
 userRouter.get('/logout', isLoggedIn, logoutUser);
-userRouter.get('/', isLoggedIn, userProfile);
-userRouter.delete('/', isLoggedIn, deleteUser);
-userRouter.put('/', isLoggedIn, formidable(), updateUser);
+userRouter
+    .route('/')
+    .get(isLoggedIn, userProfile)
+    .delete(isLoggedIn, deleteUser)
+    .put(isLoggedIn, formidable(), updateUser);
 userRouter.post('/forget-password', isLoggedOut, forgetPassword);
 userRouter.post('/reset-password', isLoggedOut, resetPassword);
 
