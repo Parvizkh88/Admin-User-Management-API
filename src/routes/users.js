@@ -21,8 +21,8 @@ userRouter.get('/logout', isLoggedIn, logoutUser);
 userRouter.get('/', isLoggedIn, userProfile);
 userRouter.delete('/', isLoggedIn, deleteUser);
 userRouter.put('/', isLoggedIn, formidable(), updateUser);
-userRouter.post('/forget-password', forgetPassword);
-userRouter.post('/reset-password', resetPassword);
+userRouter.post('/forget-password', isLoggedOut, forgetPassword);
+userRouter.post('/reset-password', isLoggedOut, resetPassword);
 
 
 module.exports = userRouter;
