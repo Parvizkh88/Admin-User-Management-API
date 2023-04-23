@@ -3,7 +3,7 @@ const session = require('express-session');
 const adminRouter = require('express').Router();
 
 const dev = require('../config');
-const { loginAdmin, logoutAdmin } = require('../controllers/admin');
+const { loginAdmin, logoutAdmin, getAllUsers } = require('../controllers/admin');
 const { isLoggedIn, isLoggedOut } = require('../middlewares/auth');
 
 adminRouter.use(session({
@@ -16,6 +16,10 @@ adminRouter.use(session({
 
 adminRouter.post('/login', isLoggedOut, loginAdmin);
 adminRouter.get('/logout', isLoggedIn, logoutAdmin);
+adminRouter.get('/dashboard', isLoggedIn, getAllUsers);
+// adminRouter.post('/dashboard', isLoggedIn, createUser);
+// adminRouter.put('/dashboard', isLoggedIn, updateUser);
+// adminRouter.delete('/dashboard', isLoggedIn, deleteUser);
 
 
 module.exports = adminRouter;

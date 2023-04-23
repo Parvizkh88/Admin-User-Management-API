@@ -77,7 +77,22 @@ const logoutAdmin = (req, res) => {
         });
     }
 };
-
+//dashboard - Read all users except admin
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({ is_admin: 0 })
+        res.status(200).json({
+            ok: true,
+            message: 'returned all users',
+            users: users,
+        });
+    } catch (error) {
+        res.status(500).json({
+            ok: false,
+            message: error.message
+        });
+    }
+};
 module.exports = {
-    loginAdmin, logoutAdmin
+    loginAdmin, logoutAdmin, getAllUsers
 }
