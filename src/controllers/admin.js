@@ -1,5 +1,6 @@
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const excelJs = require('exceljs');
 
 const { securePassword, comparePassword } = require("../helpers/bcryptPassword");
 const User = require('../models/users.js');
@@ -105,8 +106,54 @@ const deleteUserByAdmin = async (req, res) => {
     } catch (error) {
 
     }
-}
+};
+
+const exportUsers = async (req, res) => {
+    try {
+        const workbook = new excelJs.Workbook();
+        const workSheet = workbook.addWorksheet('Users');
+        workSheet.columns = [
+            { header: 'Name', key: 'name' },
+            { header: 'Email', key: 'email' },
+            { header: 'Password', key: 'password' },
+            { header: 'Image', key: 'image' },
+            { header: 'Phone', key: 'phone' },
+            { header: 'Is Admin', key: 'is_admin' },
+            { header: 'Is Banned', key: 'isBanned' },
+
+        ];
+        const userData = await User.find({ is_admin: 0 });
+        // worksheet.addRows(userData);
+        userData.map(() => {
+            workSheet.addRows(userData);
+        });
+        // what I did previously:
+        // userData.map((user) => {
+        //     workSheet.addRows(user);
+        // });
+
+        workSheet.getRow(1).eachCell((cell) => {
+            cell.font = { bold: true };
+        });
+        res.setHeader(
+            'Content-type',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        );
+        res.setHeader(
+            'Content-Disposition',
+            'attachment;filename=' + 'users.xlsx'
+        );
+        return workbook.xlsx.write(res).then(() => {
+            res.status(200).end();
+        });
+    } catch (error) {
+        res.status(500).send({
+            message: error.message,
+        });
+    }
+};
 
 module.exports = {
-    loginAdmin, logoutAdmin, getAllUsers, deleteUserByAdmin
+    loginAdmin, logoutAdmin, getAllUsers,
+    deleteUserByAdmin, exportUsers
 }

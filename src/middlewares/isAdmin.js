@@ -5,7 +5,7 @@ const isAdmin = async (req, res, next) => {
     try {
         if (req.session.userId) {
             const id = req.session.userId;
-            // req.session.userId --> get the data of the person who is logged in rom database e.g. Atlas
+            // req.session.userId --> get the data of the person who is logged in from database e.g. Atlas
             const adminData = await User.findById(id)
             if (adminData.is_admin === 1) {
                 next();

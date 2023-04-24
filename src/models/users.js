@@ -26,6 +26,10 @@ const userSchema = new Schema({
         required: [true, 'user password is required'],
         min: 6,
     },
+    image: {
+        type: String,
+        default: '../../public/images/users/Jordan.jpg',
+    },
     phone: {
         type: String,
         required: [true, 'user phone is required'],
@@ -38,18 +42,10 @@ const userSchema = new Schema({
         type: Date,
         default: Date.now,
     },
-    image: {
-        type: String,
-        default: '../../public/images/users/Jordan.jpg',
-    },
     isBanned: {
         type: Number,
         default: 0,
     },
-    // image: {
-    //     data: Buffer,
-    //     contentType: String,
-    // }
 });
 
 const User = model('Users', userSchema);
