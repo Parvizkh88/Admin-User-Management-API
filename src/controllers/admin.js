@@ -19,18 +19,18 @@ const loginAdmin = async (req, res) => {
         if (password.length < 6)
             errorResponse(res, 400, 'minimum length for password is 6');
 
-        const user = await User.findOne({ email: email })
-        if (!user)
+        const foundUser = await User.findOne({ email: email })
+        if (!foundUser)
             errorResponse(res, 400, 'user with this email does not exist. Please register first');
 
         // isAdmin - I want to check it before checking the password and comparing ...
-        if (user.is_admin === 0) {
+        if (foundUser.is_admin === 0) {
             return res.status(400).json({
                 message: 'Not an admin'
             });
         }
 
-        const isPasswordMatched = await comparePassword(password, user.password)
+        const isPasswordMatched = await comparePassword(password, foundUser.password)
 
         if (!isPasswordMatched) {
             return res.status(400).json({
@@ -38,14 +38,14 @@ const loginAdmin = async (req, res) => {
             });
         }
         // creating session
-        req.session.userId = user._id;
+        req.session.userId = foundUser._id;
 
         res.status(200).json({
             user: {
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                image: user.image,
+                name: foundUser.name,
+                email: foundUser.email,
+                phone: foundUser.phone,
+                image: foundUser.image,
             },
             message: 'login successful',
         });
@@ -87,6 +87,26 @@ const getAllUsers = async (req, res) => {
         });
     }
 };
+
+const deleteUserByAdmin = async (req, res) => {
+    try {
+        // we have put id inside curly braces since we may have more parameters
+        const { id } = req.params;
+        const foundUser = await User.findById(id);
+        if (!foundUser) errorResponse(res, 404, 'user not found with this id')
+
+        // isAdmin or not
+        await User.findByIdAndDelete(id);
+
+        res.status(200).json({
+            ok: true,
+            message: 'deleted user successfully',
+        });
+    } catch (error) {
+
+    }
+}
+
 module.exports = {
-    loginAdmin, logoutAdmin, getAllUsers
+    loginAdmin, logoutAdmin, getAllUsers, deleteUserByAdmin
 }

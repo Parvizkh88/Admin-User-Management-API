@@ -213,9 +213,10 @@ const updateUser = async (req, res) => {
         if (!req.fields.password) {
             // 
         }
-        const hashedPassword = await securePassword(req.fields.password);
+        const hashedPassword = await securePassword(req.body.password);
         const updatedData = await User.findByIdAndUpdate(req.session.userId,
-            { ...req.fields, password: hashedPassword },
+            //image in the line below is the default image if there is no image while registering
+            { ...req.body, password: hashedPassword, image: req.file.filename.image },
             // return updated data
             { new: true });
 
@@ -225,12 +226,11 @@ const updateUser = async (req, res) => {
                 message: 'user was not updated',
             });
         }
-        if (req.files.image) {
-            // access to image
-            const { image } = req.files;
-            updatedData.image.data = fs.readFileSync(image.path);
-            updatedData.image.contentType = image.type;
-        }
+        // if (req.files.image) {
+        //                const { image } = req.files;
+        //     updatedData.image.data = fs.readFileSync(image.path);
+        //     updatedData.image.contentType = image.type;
+        // }
         await updatedData.save();
 
         res.status(200).json({
@@ -316,8 +316,8 @@ const resetPassword = async (req, res) => {
             }
             // decoded the data
             const { email, hashedPassword } = decoded;
-            const isExist = await User.findOne({ email: email })
-            if (!isExist) {
+            const foundUser = await User.findOne({ email: email })
+            if (!foundUser) {
                 return res.status(400).json({
                     message: 'user with this email does not exist'
                 });
